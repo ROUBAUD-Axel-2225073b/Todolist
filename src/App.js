@@ -168,6 +168,11 @@ componentDidMount() {
     }
   };
 
+  handleSaveTasks = () => {
+    localStorage.setItem('items', JSON.stringify(this.state.items));
+  };
+
+
 
   render() {
     const { items, filter, newItemText, newItemDate, newItemCategory, searchText, isModalOpen } = this.state;
@@ -213,8 +218,7 @@ componentDidMount() {
                 </li>
             ))}
           </ol>
-          <Footer onSearch={this.handleSearch} onQuickSearch={this.handleQuickSearch} onAddTask={this.handleAddItem} onDateChange={this.handleNewItemDateChange} isModalOpen={isModalOpen} />
-          <Modal isOpen={isModalOpen}>
+          <Footer onSearch={this.handleSearch} onQuickSearch={this.handleQuickSearch} onAddTask={this.handleAddItem} onDateChange={this.handleNewItemDateChange} onSaveTasks={this.handleSaveTasks} isModalOpen={isModalOpen} />          <Modal isOpen={isModalOpen}>
             <button style={{position: 'absolute', top: 0, left: 0}} onClick={() => this.setState({isModalOpen: false})}>X</button>
             <input type="text" placeholder="Entre la tache a cree..." onChange={this.handleNewItemChange}/>
             <input type="date" onChange={this.handleNewItemDateChange}/>

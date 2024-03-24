@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Footer = ({ onSearch, onAddTask, onDateChange, onQuickSearch, isModalOpen }) => {
+const Footer = ({ onSearch, onAddTask, onDateChange, onQuickSearch, onSaveTasks, isModalOpen }) => {
   return (
       <footer>
           <input type="text" placeholder="Recherche rapide..." onChange={onQuickSearch}/>
@@ -11,8 +11,8 @@ const Footer = ({ onSearch, onAddTask, onDateChange, onQuickSearch, isModalOpen 
             </>
           )}
           <button onClick={onAddTask}>Ajouter une tâche</button>
+          <button onClick={onSaveTasks}>Sauvegarder les tâches</button> {/* Add this line */}
       </footer>
   );
 };
-
 export default Footer;
