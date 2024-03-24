@@ -1,7 +1,6 @@
 import React from "react";
 import Modal from 'react-modal';
 import Header from './header';
-import './App.css';
 import Footer from './footer';
 import HomeIcon from '@mui/icons-material/Home';
 import WorkIcon from '@mui/icons-material/Work';
@@ -37,7 +36,6 @@ constructor(props) {
     isModalOpen: false,
   };
 
-  // Bind the methods to the component instance
   this.handleToggleDone = this.handleToggleDone.bind(this);
   this.handleMoveUp = this.handleMoveUp.bind(this);
   this.handleMoveDown = this.handleMoveDown.bind(this);
