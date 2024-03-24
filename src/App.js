@@ -231,7 +231,7 @@ constructor(props) {
             <button onClick={() => this.handleFilterChange("all")}>All</button>
             <button onClick={() => this.handleFilterChange("todo")}>To Do</button>
             <button onClick={() => this.handleFilterChange("done")}>Done</button>
-          </div>
+
           <select onChange={this.handleCategoryFilterChange}>
         <option value="">Toutes les catégories</option>
         <option value="Work">Travail</option>
@@ -239,6 +239,7 @@ constructor(props) {
         <option value="School">Ecole</option>
         <option value="Personal">Personnel</option>
       </select>
+          </div>
           <ol className="task-list">
             {filteredTasks.map((item, index) => (
                 <li key={item.id}>
