@@ -8,36 +8,51 @@ import WorkIcon from '@mui/icons-material/Work';
 import SchoolIcon from '@mui/icons-material/School';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import PersonalIcon from '@mui/icons-material/Person';
+
 
 Modal.setAppElement('#root');
-
-
-
 
 const categoryIcons = {
   Home: <HomeIcon />,
   Work: <WorkIcon />,
   School: <SchoolIcon />,
-  // on peut en mettre d autre si on veut mais il faudras rajoute des import lie a l'icon
+  Personal: <PersonalIcon />,
 };
 
 class App extends React.Component {
-  constructor(props) {
-    super(props);
-    const savedItems = localStorage.getItem('items');
-    const items = savedItems
-        ? JSON.parse(savedItems).map(item => ({...item, date: new Date(item.date)}))
-        : [];
-    this.state = {
-      items: items,
-      filter: "all",
-      newItemText: "",
-      newItemDate: new Date(),
-      newItemCategory: "Work",
-      searchText: "",
-      isModalOpen: false,
-    };
-  }
+constructor(props) {
+  super(props);
+  const savedItems = localStorage.getItem('items');
+  const items = savedItems
+      ? JSON.parse(savedItems).map(item => ({...item, date: new Date(item.date)}))
+      : [];
+  this.state = {
+    items: items,
+    filter: "all",
+    newItemText: "",
+    newItemDate: new Date(),
+    newItemCategory: "",
+    searchText: "",
+    isModalOpen: false,
+  };
+
+  // Bind the methods to the component instance
+  this.handleToggleDone = this.handleToggleDone.bind(this);
+  this.handleMoveUp = this.handleMoveUp.bind(this);
+  this.handleMoveDown = this.handleMoveDown.bind(this);
+  this.handleAddItem = this.handleAddItem.bind(this);
+  this.handleConfirmAddItem = this.handleConfirmAddItem.bind(this);
+  this.handleEditItem = this.handleEditItem.bind(this);
+  this.handleDeleteItem = this.handleDeleteItem.bind(this);
+  this.handleFilterChange = this.handleFilterChange.bind(this);
+  this.handleNewItemChange = this.handleNewItemChange.bind(this);
+  this.handleNewItemDateChange = this.handleNewItemDateChange.bind(this);
+  this.handleSearch = this.handleSearch.bind(this);
+  this.handleQuickSearch = this.handleQuickSearch.bind(this);
+  this.handleCategoryFilterChange = this.handleCategoryFilterChange.bind(this);
+  this.handleNewItemCategoryChange = this.handleNewItemCategoryChange.bind(this);
+}
 
   componentDidUpdate(prevProps, prevState) {
     if (prevState.items !== this.state.items) {
@@ -83,6 +98,7 @@ class App extends React.Component {
 
   handleConfirmAddItem = () => {
     const {newItemText, newItemDate, newItemCategory} = this.state;
+    console.log("Reading category from state: ", newItemCategory); // Add this line
     if (newItemText.trim() !== "") {
       const newItem = {
         id: Date.now(),
@@ -149,8 +165,17 @@ class App extends React.Component {
     }
   };
 
+  handleCategoryFilterChange = (event) => {
+    this.setState({categoryFilter: event.target.value});
+  };
+
   handleNewItemCategoryChange = (event) => {
-    this.setState({newItemCategory: event.target.value});
+    const category = event.target.value;
+    if (category) {
+      this.setState({newItemCategory: category}, () => {
+        console.log("Updated category in state: ", this.state.newItemCategory);
+      });
+    }
   };
 
   componentDidMount() {
@@ -183,74 +208,82 @@ class App extends React.Component {
 
 
   render() {
-    const {items, filter, newItemCategory, searchText, isModalOpen} = this.state;
+    const {items, filter, newItemCategory, searchText, isModalOpen, categoryFilter} = this.state;
 
     const filteredTasks = items.filter(item => {
       const matchesSearchText = item.text.toLowerCase().includes(searchText.toLowerCase());
+      const matchesCategory = categoryFilter ? item.category === categoryFilter : true;
       if (filter === "all") {
-        return matchesSearchText;
+        return matchesSearchText && matchesCategory;
       } else if (filter === "todo") {
-        return !item.done && matchesSearchText;
+        return !item.done && matchesSearchText && matchesCategory;
       } else {
-        return item.done && matchesSearchText;
+        return item.done && matchesSearchText && matchesCategory;
       }
     });
 
     const remainingTasks = items.filter(item => !item.done).length;
 
-
-return (
-  <div className="task-container">
-    <Header totalTasks={items.length} remainingTasks={remainingTasks}/>
-    <div className="button-container">
-      <button onClick={() => this.handleFilterChange("all")}>All</button>
-      <button onClick={() => this.handleFilterChange("todo")}>To Do</button>
-      <button onClick={() => this.handleFilterChange("done")}>Done</button>
-    </div>
-    <ol className="task-list">
-      {filteredTasks.map((item, index) => (
-          <li key={item.id}>
-            {index !== 0 && <button className="move-button" onClick={() => this.handleMoveUp(item.id)}>↑</button>}
-            {index !== filteredTasks.length - 1 && <button className="move-button" onClick={() => this.handleMoveDown(item.id)}>↓</button>}
-            <label>
-              <input
-                  type="checkbox"
-                  checked={item.done}
-                  onChange={() => this.handleToggleDone(item.id)}
-              />
-              <span className={item.done ? "done" : ""}>{item.text} </span>
-              <span>({item.date.toLocaleDateString('fr-FR', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-              })})</span>
-              {categoryIcons[item.category]}
-            </label>
-            <button className="edit-button" onClick={() => this.handleEditItem(item.id)}><EditIcon/></button>
-            <button className="delete-button" onClick={() => this.handleDeleteItem(item.id)}><DeleteIcon/></button>
-          </li>
-      ))}
-    </ol>
-    <Footer onSearch={this.handleSearch} onQuickSearch={this.handleQuickSearch} onAddTask={this.handleAddItem}
-            onDateChange={this.handleNewItemDateChange} onSaveTasks={this.handleSaveTasks}
-            isModalOpen={isModalOpen}/>
-    <Modal isOpen={isModalOpen}>
-      <button className="close-button" onClick={() => this.setState({isModalOpen: false})}>X</button>
-      <input className="popup-text-input" type="text" placeholder="Entre la tache a cree..."
-             onChange={this.handleNewItemChange}/>
-      <input className="popup-date-input" type="date" onChange={this.handleNewItemDateChange}/>
-      <select className="popup-select" onChange={this.handleNewItemCategoryChange} value={newItemCategory}>
+    return (
+        <div className="task-container">
+          <Header totalTasks={items.length} remainingTasks={remainingTasks}/>
+          <div className="button-container">
+            <button onClick={() => this.handleFilterChange("all")}>All</button>
+            <button onClick={() => this.handleFilterChange("todo")}>To Do</button>
+            <button onClick={() => this.handleFilterChange("done")}>Done</button>
+          </div>
+          <select onChange={this.handleCategoryFilterChange}>
+        <option value="">Toutes les catégories</option>
         <option value="Work">Travail</option>
         <option value="Home">Maison</option>
         <option value="School">Ecole</option>
-        {/* on peut en mettre d autre si on veut */}
+        <option value="Personal">Personnel</option>
       </select>
-      <button className="confirm-add-button" onClick={this.handleConfirmAddItem}>Confirmer l'ajout</button>
-    </Modal>
-  </div>
-);
-}
+          <ol className="task-list">
+            {filteredTasks.map((item, index) => (
+                <li key={item.id}>
+                  {index !== 0 && <button className="move-button" onClick={() => this.handleMoveUp(item.id)}>↑</button>}
+                  {index !== filteredTasks.length - 1 && <button className="move-button" onClick={() => this.handleMoveDown(item.id)}>↓</button>}
+                  <label>
+                    <input
+                        type="checkbox"
+                        checked={item.done}
+                        onChange={() => this.handleToggleDone(item.id)}
+                    />
+                    <span className={item.done ? "done" : ""}>{item.text} </span>
+                    <span>({item.date.toLocaleDateString('fr-FR', {
+                      weekday: 'long',
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })})</span>
+                    {categoryIcons[item.category]}
+                  </label>
+                  <button className="edit-button" onClick={() => this.handleEditItem(item.id)}><EditIcon/></button>
+                  <button className="delete-button" onClick={() => this.handleDeleteItem(item.id)}><DeleteIcon/></button>
+                </li>
+            ))}
+          </ol>
+          <Footer onSearch={this.handleSearch} onQuickSearch={this.handleQuickSearch} onAddTask={this.handleAddItem}
+                  onDateChange={this.handleNewItemDateChange} onSaveTasks={this.handleSaveTasks}
+                  isModalOpen={isModalOpen}/>
+          <Modal isOpen={isModalOpen}>
+            <button className="close-button" onClick={() => this.setState({isModalOpen: false})}>X</button>
+            <input className="popup-text-input" type="text" placeholder="Entre la tache a cree..."
+                   onChange={this.handleNewItemChange}/>
+            <input className="popup-date-input" type="date" onChange={this.handleNewItemDateChange}/>
+            <select className="popup-select" onChange={this.handleNewItemCategoryChange} value={newItemCategory}>
+              <option value="">Select a category</option>
+              <option value="Home">Home</option>
+              <option value="Work">Work</option>
+              <option value="School">School</option>
+              <option value="Personal">Personnel</option>
+            </select>
+            <button className="confirm-add-button" onClick={this.handleConfirmAddItem}>Confirmer l'ajout</button>
+          </Modal>
+        </div>
+    );
+  }
 
 }
 export default App;
