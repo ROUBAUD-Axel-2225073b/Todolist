@@ -2,6 +2,17 @@ import React from "react";
 import Modal from 'react-modal';
 import Header from './header';
 import Footer from './footer';
+import HomeIcon from '@mui/icons-material/Home';
+import WorkIcon from '@mui/icons-material/Work';
+import SchoolIcon from '@mui/icons-material/School';
+
+
+const categoryIcons = {
+  Home: <HomeIcon />,
+  Work: <WorkIcon />,
+  School: <SchoolIcon />,
+  // on peut en mettre d autre si on veut mais il faudras rajoute des import lie a l'icon
+};
 
 class App extends React.Component {
   constructor(props) {
@@ -15,11 +26,11 @@ class App extends React.Component {
       filter: "all",
       newItemText: "",
       newItemDate: new Date(),
+      newItemCategory: "Work",
       searchText: "",
       isModalOpen: false,
     };
   }
-
   componentDidUpdate(prevProps, prevState) {
     if (prevState.items !== this.state.items) {
       localStorage.setItem('items', JSON.stringify(this.state.items));
@@ -62,25 +73,25 @@ class App extends React.Component {
     this.setState({ isModalOpen: true });
   };
 
-    handleConfirmAddItem = () => {
-      const {newItemText, newItemDate, newItemCategory} = this.state;
-      if (newItemText.trim() !== "") {
-        const newItem = {
-          id: Date.now(),
-          text: newItemText,
-          date: newItemDate,
-          category: newItemCategory,
-          done: false
-        };
-        this.setState((prevState) => ({
-          items: [...prevState.items, newItem],
-          newItemText: "",
-          newItemDate: new Date(),
-          newItemCategory: "",
-          isModalOpen: false,
-        }));
-      }
-    };
+  handleConfirmAddItem = () => {
+    const {newItemText, newItemDate, newItemCategory} = this.state;
+    if (newItemText.trim() !== "") {
+      const newItem = {
+        id: Date.now(),
+        text: newItemText,
+        date: newItemDate,
+        category: newItemCategory,
+        done: false
+      };
+      this.setState((prevState) => ({
+        items: [...prevState.items, newItem],
+        newItemText: "",
+        newItemDate: new Date(),
+        newItemCategory: "",
+        isModalOpen: false,
+      }));
+    }
+  };
 
   handleEditItem = (itemId) => {
     const {items} = this.state;
@@ -138,9 +149,8 @@ class App extends React.Component {
 };
 
   handleNewItemCategoryChange = (event) => {
-  this.setState({newItemCategory: event.target.value});
+    this.setState({newItemCategory: event.target.value});
   };
-
   componentDidMount() {
     window.addEventListener('keydown', this.handleKeyDown);
   }
@@ -157,7 +167,7 @@ class App extends React.Component {
 
 
   render() {
-    const { items, filter, newItemText, newItemDate, searchText, isModalOpen } = this.state;
+    const { items, filter, newItemText, newItemDate, newItemCategory, searchText, isModalOpen } = this.state;
 
     const filteredTasks = items.filter(item => {
       const matchesSearchText = item.text.toLowerCase().includes(searchText.toLowerCase());
@@ -193,6 +203,7 @@ class App extends React.Component {
                     />
                     <span className={item.done ? "done" : ""}>{item.text} </span>
                     <span>({item.date.toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })})</span>
+                    {categoryIcons[item.category]}
                   </label>
                   <button onClick={() => this.handleEditItem(item.id)}>Edit</button>
                   <button className="delete-button" onClick={() => this.handleDeleteItem(item.id)}>Delete</button>
@@ -204,11 +215,17 @@ class App extends React.Component {
             <button style={{position: 'absolute', top: 0, left: 0}} onClick={() => this.setState({isModalOpen: false})}>X</button>
             <input type="text" placeholder="Entre la tache a cree..." onChange={this.handleNewItemChange}/>
             <input type="date" onChange={this.handleNewItemDateChange}/>
+            <select onChange={this.handleNewItemCategoryChange} value={newItemCategory}>
+              <option value="Work">Travail</option>
+              <option value="Home">Maison</option>
+              <option value="School">Ecole</option>
+              {/* on peut en mettre d autre si on veut */}
+            </select>
             <button onClick={this.handleConfirmAddItem}>Confirmer l'ajout</button>
           </Modal>
         </div>
     );
-  }
+}
 }
 
 export default App;
