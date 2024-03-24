@@ -42,6 +42,163 @@
   }
 }
 
+/* Autre ecran */
+/* CSS pour les écrans plus grands (tablettes, ordinateurs de bureau) */
+@media only screen and (min-width: 601px) {
+  .header {
+    background-color: #1a202c;
+    text-align: center;
+    padding: 20px;
+    color: #fff;
+  }
+
+  .task-container {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .task-list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+  .move-button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 2px;
+  width: 30px;
+  height: 30px;
+  margin-right: 5px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+  .edit-button, .delete-button {
+    background-color: #38a169;
+    color: white;
+    padding: 10px;
+    width: 60px;
+    height: 60px;
+    margin-right: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  button {
+    width: 20%;
+    background-color: #38a169;
+    color: white;
+    padding: 10px 10px;
+    margin: 10px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .button-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* Styles pour le footer */
+  footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: #1a202c;
+    color: white;
+    text-align: center;
+    padding: 20px;
+  }
+
+  .footer-button {
+    background-color: #38a169;
+    color: white;
+    padding: 15px 30px;
+    margin: 0 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .ReactModal__Content {
+    width: 60%;
+    height: 60%;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    right: auto;
+    bottom: auto;
+    transform: translate(25%,20%);
+  }
+
+  .quick-search-input {
+    width: 70%;
+    padding: 15px 30px;
+    margin: 20px 0 16px 20px;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+
+  /* POPUP */
+  .popup-text-input, .popup-date-input, .popup-select {
+    width: 100%;
+    padding: 15px 30px;
+    margin: 30px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+
+  .close-button {
+    position: absolute;
+    top: 10px;
+    right: 0;
+    width: 20px;
+    height: 20px;
+    background-color: #FF5F57;
+    border-radius: 50%;
+    border: none;
+    padding: 0;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    z-index: 1001;
+  }
+
+  .close-button:before {
+    content: '×';
+    color: #ffffff;
+    font-size: 24px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .confirm-add-button {
+    width: 100%;
+    background-color: #4CAF50;
+    color: white;
+    padding: 20px 30px;
+    margin: 16px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .close-button:hover {
+    color: #000;
+  }
+}
+
 /* CSS pour les écrans plus petits (téléphones) */
 @media only screen and (max-width: 600px) {
   .header {
@@ -50,17 +207,20 @@
 /* Styles pour les appareils mobiles */
 @media (max-width: 600px) {
   .header {
-    background-color: #f8f9fa;
+    background-color: #1a202c;
     text-align: center;
+    padding: 5px;
+    color: #fff;
   }
+
 
   .edit-button {
     background-color: #4CAF50;
     color: white;
-    padding: 2px;
+    padding: 0;
     width: 30px;
     height: 30px;
-    margin-right: 5px;
+    margin-right: 0px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
@@ -81,7 +241,7 @@
     background-color: #4CAF50;
     color: white;
     padding: 10px 10px;
-    margin: 0 10px;
+    margin: 5px 10px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
@@ -93,7 +253,7 @@
     left: 0;
     bottom: 0;
     width: 100%;
-    background-color: #f8f9fa;
+    background-color: #1a202c;
     color: black;
     text-align: center;
     padding: 10px;
@@ -128,6 +288,18 @@
     border: 1px solid #ccc;
     border-radius: 4px;
     box-sizing: border-box;
+  }
+
+  .move-button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 2px;
+    width: 30px;
+    height: 30px;
+    margin-right: 1px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
   }
 
   /* POPUP */

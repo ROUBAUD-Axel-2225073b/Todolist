@@ -26,7 +26,7 @@ class App extends React.Component {
     super(props);
     const savedItems = localStorage.getItem('items');
     const items = savedItems
-        ? JSON.parse(savedItems).map(item => ({ ...item, date: new Date(item.date) }))
+        ? JSON.parse(savedItems).map(item => ({...item, date: new Date(item.date)}))
         : [];
     this.state = {
       items: items,
@@ -38,6 +38,7 @@ class App extends React.Component {
       isModalOpen: false,
     };
   }
+
   componentDidUpdate(prevProps, prevState) {
     if (prevState.items !== this.state.items) {
       localStorage.setItem('items', JSON.stringify(this.state.items));
@@ -77,7 +78,7 @@ class App extends React.Component {
   };
 
   handleAddItem = () => {
-    this.setState({ isModalOpen: true });
+    this.setState({isModalOpen: true});
   };
 
   handleConfirmAddItem = () => {
@@ -139,31 +140,32 @@ class App extends React.Component {
     this.setState({newItemText: event.target.value});
   };
 
- handleQuickSearch = (event) => {
-  const searchText = event.target.value;
-  if (searchText.length >= 3) {
-    this.setState({searchText: searchText});
-  } else {
-    this.setState({searchText: ""});
-  }
-};
+  handleQuickSearch = (event) => {
+    const searchText = event.target.value;
+    if (searchText.length >= 3) {
+      this.setState({searchText: searchText});
+    } else {
+      this.setState({searchText: ""});
+    }
+  };
 
   handleNewItemCategoryChange = (event) => {
     this.setState({newItemCategory: event.target.value});
   };
-componentDidMount() {
-  const confirmation = window.confirm("Voulez-vous charger les tâches de la session précédente ?");
-  if (confirmation) {
-    const savedItems = localStorage.getItem('items');
-    const items = savedItems
-        ? JSON.parse(savedItems).map(item => ({ ...item, date: new Date(item.date) }))
-        : [];
-    this.setState({ items: items });
-  } else {
-    this.setState({ items: [] });
+
+  componentDidMount() {
+    const confirmation = window.confirm("Voulez-vous charger les tâches de la session précédente ?");
+    if (confirmation) {
+      const savedItems = localStorage.getItem('items');
+      const items = savedItems
+          ? JSON.parse(savedItems).map(item => ({...item, date: new Date(item.date)}))
+          : [];
+      this.setState({items: items});
+    } else {
+      this.setState({items: []});
+    }
+    window.addEventListener('keydown', this.handleKeyDown);
   }
-  window.addEventListener('keydown', this.handleKeyDown);
-}
 
   componentWillUnmount() {
     window.removeEventListener('keydown', this.handleKeyDown);
@@ -171,7 +173,7 @@ componentDidMount() {
 
   handleKeyDown = (event) => {
     if (event.key === 'Escape') {
-      this.setState({ isModalOpen: false });
+      this.setState({isModalOpen: false});
     }
   };
 
@@ -180,75 +182,75 @@ componentDidMount() {
   };
 
 
+  render() {
+    const {items, filter, newItemCategory, searchText, isModalOpen} = this.state;
 
- render() {
-  const { items, filter, newItemCategory, searchText, isModalOpen } = this.state;
+    const filteredTasks = items.filter(item => {
+      const matchesSearchText = item.text.toLowerCase().includes(searchText.toLowerCase());
+      if (filter === "all") {
+        return matchesSearchText;
+      } else if (filter === "todo") {
+        return !item.done && matchesSearchText;
+      } else {
+        return item.done && matchesSearchText;
+      }
+    });
 
-  const filteredTasks = items.filter(item => {
-    const matchesSearchText = item.text.toLowerCase().includes(searchText.toLowerCase());
-    if (filter === "all") {
-      return matchesSearchText;
-    } else if (filter === "todo") {
-      return !item.done && matchesSearchText;
-    } else {
-      return item.done && matchesSearchText;
-    }
-  });
+    const remainingTasks = items.filter(item => !item.done).length;
 
-  const remainingTasks = items.filter(item => !item.done).length;
 
-  return (
-      <div>
-        <Header totalTasks={items.length} remainingTasks={remainingTasks}/>
-        <div>
-          <button onClick={() => this.handleFilterChange("all")}>All</button>
-          <button onClick={() => this.handleFilterChange("todo")}>To Do</button>
-          <button onClick={() => this.handleFilterChange("done")}>Done</button>
-        </div>
-        <ol>
-          {filteredTasks.map((item, index) => (
-              <li key={item.id}>
-                {index !== 0 && <button onClick={() => this.handleMoveUp(item.id)}>↑</button>}
-                {index !== filteredTasks.length - 1 && <button onClick={() => this.handleMoveDown(item.id)}>↓</button>}
-                <label>
-                  <input
-                      type="checkbox"
-                      checked={item.done}
-                      onChange={() => this.handleToggleDone(item.id)}
-                  />
-                  <span className={item.done ? "done" : ""}>{item.text} </span>
-                  <span>({item.date.toLocaleDateString('fr-FR', {
-                    weekday: 'long',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                  })})</span>
-                  {categoryIcons[item.category]}
-                </label>
-               <button className="edit-button" onClick={() => this.handleEditItem(item.id)}><EditIcon/></button>
-                <button className="delete-button" onClick={() => this.handleDeleteItem(item.id)}><DeleteIcon/></button>
-              </li>
-          ))}
-        </ol>
-        <Footer onSearch={this.handleSearch} onQuickSearch={this.handleQuickSearch} onAddTask={this.handleAddItem}
-                onDateChange={this.handleNewItemDateChange} onSaveTasks={this.handleSaveTasks}
-                isModalOpen={isModalOpen}/>
-        <Modal isOpen={isModalOpen}>
-          <button className="close-button" onClick={() => this.setState({isModalOpen: false})}>X</button>
-          <input className="popup-text-input" type="text" placeholder="Entre la tache a cree..."
-                 onChange={this.handleNewItemChange}/>
-          <input className="popup-date-input" type="date" onChange={this.handleNewItemDateChange}/>
-          <select className="popup-select" onChange={this.handleNewItemCategoryChange} value={newItemCategory}>
-            <option value="Work">Travail</option>
-            <option value="Home">Maison</option>
-            <option value="School">Ecole</option>
-            {/* on peut en mettre d autre si on veut */}
-          </select>
-          <button className="confirm-add-button" onClick={this.handleConfirmAddItem}>Confirmer l'ajout</button>
-        </Modal>
-      </div>
-  );
- }
+return (
+  <div className="task-container">
+    <Header totalTasks={items.length} remainingTasks={remainingTasks}/>
+    <div className="button-container">
+      <button onClick={() => this.handleFilterChange("all")}>All</button>
+      <button onClick={() => this.handleFilterChange("todo")}>To Do</button>
+      <button onClick={() => this.handleFilterChange("done")}>Done</button>
+    </div>
+    <ol className="task-list">
+      {filteredTasks.map((item, index) => (
+          <li key={item.id}>
+            {index !== 0 && <button className="move-button" onClick={() => this.handleMoveUp(item.id)}>↑</button>}
+            {index !== filteredTasks.length - 1 && <button className="move-button" onClick={() => this.handleMoveDown(item.id)}>↓</button>}
+            <label>
+              <input
+                  type="checkbox"
+                  checked={item.done}
+                  onChange={() => this.handleToggleDone(item.id)}
+              />
+              <span className={item.done ? "done" : ""}>{item.text} </span>
+              <span>({item.date.toLocaleDateString('fr-FR', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+              })})</span>
+              {categoryIcons[item.category]}
+            </label>
+            <button className="edit-button" onClick={() => this.handleEditItem(item.id)}><EditIcon/></button>
+            <button className="delete-button" onClick={() => this.handleDeleteItem(item.id)}><DeleteIcon/></button>
+          </li>
+      ))}
+    </ol>
+    <Footer onSearch={this.handleSearch} onQuickSearch={this.handleQuickSearch} onAddTask={this.handleAddItem}
+            onDateChange={this.handleNewItemDateChange} onSaveTasks={this.handleSaveTasks}
+            isModalOpen={isModalOpen}/>
+    <Modal isOpen={isModalOpen}>
+      <button className="close-button" onClick={() => this.setState({isModalOpen: false})}>X</button>
+      <input className="popup-text-input" type="text" placeholder="Entre la tache a cree..."
+             onChange={this.handleNewItemChange}/>
+      <input className="popup-date-input" type="date" onChange={this.handleNewItemDateChange}/>
+      <select className="popup-select" onChange={this.handleNewItemCategoryChange} value={newItemCategory}>
+        <option value="Work">Travail</option>
+        <option value="Home">Maison</option>
+        <option value="School">Ecole</option>
+        {/* on peut en mettre d autre si on veut */}
+      </select>
+      <button className="confirm-add-button" onClick={this.handleConfirmAddItem}>Confirmer l'ajout</button>
+    </Modal>
+  </div>
+);
 }
 
+}
 export default App;
