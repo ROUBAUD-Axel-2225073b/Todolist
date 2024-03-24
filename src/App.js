@@ -115,13 +115,6 @@ class App extends React.Component {
     }
   };
 
-  handleDeleteAll = () => {
-    const confirmation = window.confirm("Etes vous sur de supprimer toutes les taches ?");
-    if (confirmation) {
-      this.setState({ items: [] });
-    }
-  };
-
   handleFilterChange = (filterType) => {
     this.setState({filter: filterType});
   };
@@ -151,9 +144,19 @@ class App extends React.Component {
   handleNewItemCategoryChange = (event) => {
     this.setState({newItemCategory: event.target.value});
   };
-  componentDidMount() {
-    window.addEventListener('keydown', this.handleKeyDown);
+componentDidMount() {
+  const confirmation = window.confirm("Voulez-vous charger les tâches de la session précédente ?");
+  if (confirmation) {
+    const savedItems = localStorage.getItem('items');
+    const items = savedItems
+        ? JSON.parse(savedItems).map(item => ({ ...item, date: new Date(item.date) }))
+        : [];
+    this.setState({ items: items });
+  } else {
+    this.setState({ items: [] });
   }
+  window.addEventListener('keydown', this.handleKeyDown);
+}
 
   componentWillUnmount() {
     window.removeEventListener('keydown', this.handleKeyDown);
